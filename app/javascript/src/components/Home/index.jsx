@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 
 import tasksApi from "apis/posts";
+import { Container, PageLoader, PageTitle } from "components/commons";
+import { either, isEmpty, isNil } from "ramda";
+
+import List from "./Post/List";
 
 const Home = () => {
   const [posts, setPosts] = useState([]);
@@ -25,16 +29,27 @@ const Home = () => {
 
   if (loading) {
     return (
-      <div className="flex h-screen w-screen items-center justify-center">
-        Loading...
+      <div className="h-screen w-screen">
+        <PageLoader />
       </div>
     );
   }
 
+  if (either(isNil, isEmpty)(posts)) {
+    return (
+      <Container>
+        <h1 className="my-5 text-center text-xl leading-5">
+          You have not created or been assigned any tasks 🥳
+        </h1>
+      </Container>
+    );
+  }
+
   return (
-    <div className="p-4">
-      <pre>{JSON.stringify(posts, null, 2)}</pre>
-    </div>
+    <Container className="flex flex-col space-y-4 p-10">
+      <PageTitle title="Blog posts" />
+      <List posts={posts} />
+    </Container>
   );
 };
 
