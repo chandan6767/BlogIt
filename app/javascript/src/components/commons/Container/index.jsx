@@ -1,8 +1,9 @@
 import React from "react";
 
 import classnames from "classnames";
-import SideNavBar from "components/SideNavBar";
 import PropTypes from "prop-types";
+
+import SideNavBar from "./SideNavBar";
 
 const Container = ({ children, className = "" }) => (
   <div className="flex h-screen overflow-hidden">
