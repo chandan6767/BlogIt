@@ -46,7 +46,7 @@ const Home = () => {
   }
 
   return (
-    <Container className="flex flex-col space-y-4 p-10">
+    <Container className="flex flex-col space-y-4 px-10 py-6">
       <PageTitle title="Blog posts" />
       <List posts={posts} />
     </Container>
