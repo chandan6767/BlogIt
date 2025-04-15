@@ -11,10 +11,12 @@ const alias = {
   path: require.resolve("path-browserify"),
   buffer: require.resolve("buffer"),
   stream: require.resolve("stream-browserify"),
+  "~": absolutePath("src"),
   apis: absolutePath("src/apis"),
   common: absolutePath("src/common"),
   components: absolutePath("src/components"),
-  "~": absolutePath("src"),
+  constants: absolutePath("src/constants"),
+  utils: absolutePath("src/utils"),
   assets: absolutePath("../assets"),
 };
 
