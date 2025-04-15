@@ -4,7 +4,7 @@ import tasksApi from "apis/posts";
 import { Container, PageLoader, PageTitle } from "components/commons";
 import { either, isEmpty, isNil } from "ramda";
 
-import List from "./Post/List";
+import List from "./Posts/List";
 
 const Home = () => {
   const [posts, setPosts] = useState([]);
@@ -46,7 +46,7 @@ const Home = () => {
   }
 
   return (
-    <Container className="flex flex-col space-y-4 px-10 py-6">
+    <Container>
       <PageTitle title="Blog posts" />
       <List posts={posts} />
     </Container>
