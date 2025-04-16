@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import postsApi from "apis/posts";
-import { Container, PageTitle } from "components/commons";
+import { Container, Header } from "components/commons";
 
 import Form from "./Form";
 
@@ -25,18 +25,25 @@ const Create = ({ history }) => {
     }
   };
 
+  const handleCancel = () => {
+    history.push(routes.root);
+  };
+
   return (
     <Container>
-      <div className="flex flex-col gap-y-8">
-        <PageTitle title="Add new post" />
-        <Form
-          description={description}
-          handleSubmit={handleSubmit}
-          loading={loading}
-          setDescription={setDescription}
-          setTitle={setTitle}
-          title={title}
-        />
+      <Header pageTitle="Add new post" />
+      <div className="flex-1 overflow-y-auto p-10">
+        <div className="rounded-3xl border p-[3vw] shadow-lg">
+          <Form
+            description={description}
+            handleCancel={handleCancel}
+            handleSubmit={handleSubmit}
+            loading={loading}
+            setDescription={setDescription}
+            setTitle={setTitle}
+            title={title}
+          />
+        </div>
       </div>
     </Container>
   );
