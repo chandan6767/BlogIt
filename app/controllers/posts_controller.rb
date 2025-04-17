@@ -7,8 +7,7 @@ class PostsController < ApplicationController
   end
 
   def create
-    post = Post.new(post_params)
-    post.save!
+    Post.create!(post_params)
     render_notice(t("successfully_created"))
   end
 
