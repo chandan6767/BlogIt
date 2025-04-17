@@ -1,14 +1,21 @@
 import React, { useEffect, useState } from "react";
 
+import { Button } from "@bigbinary/neetoui";
 import tasksApi from "apis/posts";
-import { Container, PageLoader, PageTitle } from "components/commons";
+import { Container, PageLoader } from "components/commons";
+import List from "components/Posts/List";
 import { either, isEmpty, isNil } from "ramda";
+import { useHistory } from "react-router-dom";
 
-import List from "./Post/List";
+import Header from "./commons/Header";
+
+import routes from "~/routes";
 
 const Home = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const history = useHistory();
 
   const fetchTasks = async () => {
     try {
@@ -26,6 +33,10 @@ const Home = () => {
   useEffect(() => {
     fetchTasks();
   }, []);
+
+  const navigateToCreatePost = () => {
+    history.push(routes.posts.create);
+  };
 
   if (loading) {
     return (
@@ -46,9 +57,20 @@ const Home = () => {
   }
 
   return (
-    <Container className="flex flex-col space-y-4 px-10 py-6">
-      <PageTitle title="Blog posts" />
-      <List posts={posts} />
+    <Container>
+      <Header
+        pageTitle="Blog posts"
+        actionBlock={
+          <Button
+            label="Add new blog post"
+            size="large"
+            onClick={navigateToCreatePost}
+          />
+        }
+      />
+      <div className="flex-1 overflow-y-auto px-10">
+        <List posts={posts} />
+      </div>
     </Container>
   );
 };
