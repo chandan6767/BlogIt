@@ -5,12 +5,16 @@ import { NavLink } from "react-router-dom";
 
 const Item = ({ to, icon: Icon, className }) => (
   <NavLink
+    exact
     to={to}
-    className={classNames(
-      "flex items-center justify-center rounded p-2 text-center",
-      { "hover:bg-gray-100": !className },
-      className
-    )}
+    className={isActive =>
+      classNames(
+        "flex items-center justify-center rounded p-2 text-center transition-colors duration-150",
+        { "hover:bg-gray-100": !className },
+        { "bg-gray-100 hover:bg-gray-100": isActive },
+        className
+      )
+    }
   >
     <Icon />
   </NavLink>
