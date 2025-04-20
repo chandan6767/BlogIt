@@ -2,7 +2,9 @@
 
 class PostsController < ApplicationController
   def index
-    posts = Post.order(created_at: :desc)
+    posts = Post.includes(:categories)
+      .by_category_ids(params[:category_ids])
+      .order(created_at: :desc)
     render_json({ posts: })
   end
 

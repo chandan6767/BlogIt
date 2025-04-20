@@ -9,7 +9,7 @@ import Item from "./Item";
 import routes from "~/routes";
 
 const SideNavBar = () => {
-  const [isCategoriesOpen, setIsCategoriesOpen] = useState(true);
+  const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
 
   const toggleCategoriesOpen = () => setIsCategoriesOpen(prev => !prev);
 

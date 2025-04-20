@@ -1,57 +1,48 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 
+import { Paragraph } from "@bigbinary/neeto-icons";
 import { Button } from "@bigbinary/neetoui";
-import tasksApi from "apis/posts";
 import { Container, PageLoader } from "components/commons";
 import List from "components/Posts/List";
 import { either, isEmpty, isNil } from "ramda";
 import { useHistory } from "react-router-dom";
+import useCategoryStore from "stores/useCategoryStore";
 
 import Header from "./commons/Header";
+
+import { useFetchPosts } from "../hooks/reactQuery/usePostsApi";
 
 import routes from "~/routes";
 
 const Home = () => {
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-
   const history = useHistory();
 
-  const fetchTasks = async () => {
-    try {
-      const {
-        data: { posts },
-      } = await tasksApi.fetch();
-      setPosts(posts);
-      setLoading(false);
-    } catch (error) {
-      logger.error(error);
-      setLoading(false);
-    }
-  };
+  const { selected } = useCategoryStore();
 
-  useEffect(() => {
-    fetchTasks();
-  }, []);
+  const { data, isLoading } = useFetchPosts(selected);
+  const posts = data?.data?.posts || [];
 
   const navigateToCreatePost = () => {
     history.push(routes.posts.create);
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
-      <div className="h-screen w-screen">
+      <Container>
         <PageLoader />
-      </div>
+      </Container>
     );
   }
 
   if (either(isNil, isEmpty)(posts)) {
     return (
       <Container>
-        <h1 className="my-5 text-center text-xl leading-5">
-          You have not created or been assigned any tasks 🥳
-        </h1>
+        <div className="flex flex-1 flex-col items-center justify-center gap-6">
+          <Paragraph className="size-36" />
+          <h1 className="text-center text-xl leading-5">
+            No posts yet — time to write something awesome! ✍️😄
+          </h1>
+        </div>
       </Container>
     );
   }

@@ -1,6 +1,12 @@
 # frozen_string_literal: true
 
 class Post < ApplicationRecord
+  scope :by_category_ids, ->(ids) {
+    return all if ids.blank?
+
+    joins(:categories).where(categories: { id: ids }).distinct
+  }
+
   MAX_TITLE_LENGTH = 125
   MAX_DESCRIPTION_LENGTH = 10000
   VALID_TITLE_REGEX = /\A.*[a-zA-Z0-9].*\z/i
