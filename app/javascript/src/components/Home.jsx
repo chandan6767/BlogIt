@@ -68,7 +68,7 @@ const Home = () => {
           />
         }
       />
-      <div className="flex-1 overflow-y-auto px-10">
+      <div className="flex-1 overflow-y-auto p-[5vw] pt-0">
         <List posts={posts} />
       </div>
     </Container>

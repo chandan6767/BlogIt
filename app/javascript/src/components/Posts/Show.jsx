@@ -38,7 +38,7 @@ const Show = ({ history }) => {
 
   return (
     <Container>
-      <div className="mx-auto w-full max-w-7xl space-y-6 px-[5vw] py-[5vw] lg:px-0">
+      <div className="mx-auto w-full max-w-7xl space-y-6 p-[5vw]">
         <div className="space-y-4 border-b border-dashed pb-4">
           <List categories={post?.categories} />
           <Typography className="font-libre-baskerville font-bold" style="h1">

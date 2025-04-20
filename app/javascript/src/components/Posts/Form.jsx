@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Button, Input, Textarea } from "@bigbinary/neetoui";
+import { Button, Input, Select, Textarea } from "@bigbinary/neetoui";
 import classNames from "classnames";
 
 import {
@@ -8,6 +8,7 @@ import {
   DESCRIPTION_MAX_CHARACTERS,
   TITLE_MAX_CHARACTERS,
 } from "./constants";
+import { buildCategoryOptions } from "./utils";
 
 const Form = ({
   type = "create",
@@ -18,10 +19,14 @@ const Form = ({
   loading,
   handleSubmit,
   handleCancel,
+  categories,
+  setSelectedCategories,
 }) => {
   const titleMaxLength = TITLE_MAX_CHARACTERS;
   const descriptionMaxLength = DESCRIPTION_MAX_CHARACTERS;
   const defaultRows = DESCRIPTION_DEFAULT_ROWS;
+
+  const categoryOptions = buildCategoryOptions(categories);
 
   return (
     <form
@@ -45,6 +50,19 @@ const Form = ({
         >
           {title.length}/{titleMaxLength}
         </span>
+      </div>
+      <div>
+        <Select
+          isMulti
+          isSearchable
+          required
+          label="Category"
+          options={categoryOptions}
+          placeholder="Search category"
+          onChange={selectedOptions =>
+            setSelectedCategories(selectedOptions.map(option => option.value))
+          }
+        />
       </div>
       <div className="relative w-full">
         <Textarea

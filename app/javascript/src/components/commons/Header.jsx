@@ -3,7 +3,7 @@ import React from "react";
 import PageTitle from "./PageTitle";
 
 const Header = ({ pageTitle, actionBlock }) => (
-  <div className="flex items-center justify-between border-b px-10 py-3">
+  <div className="flex items-center justify-between px-[5vw] pb-4 pt-[2vw]">
     <PageTitle title={pageTitle} />
     {actionBlock ? (
       <div className="flex items-center gap-4">{actionBlock}</div>

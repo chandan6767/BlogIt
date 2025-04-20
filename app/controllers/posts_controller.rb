@@ -8,7 +8,7 @@ class PostsController < ApplicationController
 
   def create
     post = Post.create!(post_params)
-    render_notice(t("successfully_created", name: post.name))
+    render_notice(t("successfully_created", name: post.title))
   end
 
   def show
@@ -18,6 +18,8 @@ class PostsController < ApplicationController
   private
 
     def post_params
-      params.require(:post).permit(:title, :description)
+      params.require(:post)
+        .permit(:title, :description, :user_id, :organization_id, category_ids: [])
+        .reverse_merge(user_id: 1, organization_id: 1)
     end
 end
