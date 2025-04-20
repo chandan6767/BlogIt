@@ -49,17 +49,17 @@ const Home = () => {
 
   return (
     <Container>
-      <Header
-        pageTitle="Blog posts"
-        actionBlock={
-          <Button
-            label="Add new blog post"
-            size="large"
-            onClick={navigateToCreatePost}
-          />
-        }
-      />
-      <div className="flex-1 overflow-y-auto p-[5vw] pt-0">
+      <div className="mx-auto w-full max-w-7xl flex-1 space-y-6 px-[5vw] pt-[3vw]">
+        <Header
+          pageTitle="Blog posts"
+          actionBlock={
+            <Button
+              label="Add new blog post"
+              size="large"
+              onClick={navigateToCreatePost}
+            />
+          }
+        />
         <List posts={posts} />
       </div>
     </Container>

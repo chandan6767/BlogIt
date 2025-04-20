@@ -7,7 +7,7 @@ const New = ({ isModalOpen, toggleModal }) => {
   const [category, setCategory] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const createCategoryMutation = useCreateCategory({
+  const { mutate, isLoading } = useCreateCategory({
     onSuccess: () => {
       setCategory("");
       toggleModal();
@@ -28,7 +28,7 @@ const New = ({ isModalOpen, toggleModal }) => {
     }
 
     setErrorMessage("");
-    createCategoryMutation.mutate({ name: category });
+    mutate({ name: category });
   };
 
   return (
@@ -52,7 +52,12 @@ const New = ({ isModalOpen, toggleModal }) => {
           type="reset"
           onClick={toggleModal}
         />
-        <Button label="Submit" type="submit" onClick={handleSubmit} />
+        <Button
+          disabled={isLoading || category.trim().length === 0}
+          label="Submit"
+          type="submit"
+          onClick={handleSubmit}
+        />
       </Modal.Footer>
     </Modal>
   );
