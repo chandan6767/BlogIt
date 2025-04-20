@@ -1,16 +1,22 @@
 import React, { useState } from "react";
 
 import { Plus, Search } from "@bigbinary/neeto-icons";
-import { Button, Spinner } from "@bigbinary/neetoui";
+import { Button, Input, Spinner } from "@bigbinary/neetoui";
 import classNames from "classnames";
 import { useFetchCategories } from "hooks/reactQuery/useCategoriesApi";
+import useDebounce from "hooks/useDebounce";
 
 import New from "./New";
+import { searchCategories } from "./utils";
 
 import useCategoryStore from "~/stores/useCategoryStore";
 
 const Categories = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchKey, setSearchKey] = useState("");
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  const debouncedSearchKey = useDebounce(searchKey);
 
   const { toggle, isSelected } = useCategoryStore();
 
@@ -18,15 +24,32 @@ const Categories = () => {
   const categories = data?.data?.categories || [];
 
   const toggleModal = () => setIsModalOpen(isOpen => !isOpen);
+  const toggleSearch = () => setIsSearchOpen(isOpen => !isOpen);
+
+  const handleSearchKeyChange = ({ target: { value } }) => {
+    setSearchKey(value);
+  };
+
+  const filteredCategories = searchCategories(categories, debouncedSearchKey);
 
   return (
     <aside className="flex w-64 flex-col overflow-y-auto border-r bg-gray-300">
-      <div className="flex items-center justify-between  px-4 pb-4 pt-8">
-        <span className="font-roboto font-bold uppercase">Categories</span>
-        <div className="flex items-center gap-1">
-          <Button icon={Search} style="text" />
-          <Button icon={Plus} style="text" onClick={toggleModal} />
+      <div className="space-y-3 pb-4">
+        <div className="flex items-center justify-between px-4 pt-8">
+          <span className="font-roboto font-bold uppercase">Categories</span>
+          <div className="flex items-center gap-1">
+            <Button icon={Search} style="text" onClick={toggleSearch} />
+            <Button icon={Plus} style="text" onClick={toggleModal} />
+          </div>
         </div>
+        {isSearchOpen && (
+          <Input
+            className="flex-grow-0 bg-transparent px-4"
+            type="search"
+            value={searchKey}
+            onChange={handleSearchKeyChange}
+          />
+        )}
       </div>
       {isLoading ? (
         <div className="flex flex-1 items-center justify-center">
@@ -34,7 +57,7 @@ const Categories = () => {
         </div>
       ) : (
         <ul className="space-y-2 overflow-y-auto p-4">
-          {categories.map(category => (
+          {filteredCategories.map(category => (
             <li
               key={category.id}
               className={classNames(
