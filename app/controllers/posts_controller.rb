@@ -7,8 +7,8 @@ class PostsController < ApplicationController
   end
 
   def create
-    Post.create!(post_params)
-    render_notice(t("successfully_created"))
+    post = Post.create!(post_params)
+    render_notice(t("successfully_created", name: post.name))
   end
 
   def show

@@ -29,7 +29,9 @@
 
 en:
   hello: "Hello world"
-  successfully_created: "Task was successfully created!"
+  successfully_created: "%{name} was successfully created!"
+  successfully_updated: "%{name} was successfully updated!"
+  successfully_deleted: "%{name} was successfully deleted!"
   post:
     slug:
       immutable: "is immutable!"
