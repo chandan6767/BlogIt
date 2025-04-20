@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 
-import { Calendar } from "@bigbinary/neeto-icons";
-import { Typography } from "@bigbinary/neetoui";
+import { Avatar, Typography } from "@bigbinary/neetoui";
 import postsApi from "apis/posts";
 import { Container, PageLoader } from "components/commons";
-import dayjs from "dayjs";
 import { useParams } from "react-router-dom";
+
+import List from "./Category/List";
+import { formatDate } from "./utils";
 
 const Show = ({ history }) => {
   const [post, setPost] = useState([]);
@@ -33,18 +34,27 @@ const Show = ({ history }) => {
     return <PageLoader />;
   }
 
-  const createdAt = dayjs(post?.created_at).format("D MMMM YYYY");
+  const createdAt = formatDate(post?.created_at);
 
   return (
     <Container>
-      <div className="mx-auto w-full max-w-[1280px] space-y-4 py-[3vw]">
+      <div className="mx-auto w-full max-w-7xl space-y-6 px-[5vw] py-[5vw] lg:px-0">
         <div className="space-y-4 border-b border-dashed pb-4">
+          <List categories={post?.categories} />
           <Typography className="font-libre-baskerville font-bold" style="h1">
             {post?.title}
           </Typography>
-          <div className="flex items-center gap-8">
-            <div className="flex items-center gap-2 font-roboto text-bb-gray-600">
-              <Calendar className="size-5" />
+          <div className="flex items-center gap-4">
+            <Avatar
+              size="large"
+              user={{
+                name: post?.user.name,
+              }}
+            />
+            <div className="font-roboto">
+              <Typography className="font-medium" style="body1">
+                {post?.user.name}
+              </Typography>
               <Typography style="body2">{createdAt}</Typography>
             </div>
           </div>
