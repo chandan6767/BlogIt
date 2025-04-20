@@ -6,6 +6,10 @@ class Post < ApplicationRecord
   VALID_TITLE_REGEX = /\A.*[a-zA-Z0-9].*\z/i
   VALID_BLOGGABLE_VALUES = [true, false].freeze
 
+  belongs_to :user
+  belongs_to :organization
+  has_and_belongs_to_many :categories
+
   validates :title,
     presence: true,
     length: { maximum: MAX_TITLE_LENGTH },
