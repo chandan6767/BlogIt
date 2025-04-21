@@ -1,14 +1,24 @@
+import { DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE } from "constants/pagination";
 import { QUERY_KEYS } from "constants/query";
 
 import postsApi from "apis/posts";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 
-export const useFetchPosts = (selectedCategories = []) => {
+export const useFetchPosts = (
+  selectedCategories = [],
+  page = DEFAULT_PAGE_NUMBER,
+  perPage = DEFAULT_PAGE_SIZE
+) => {
   const categoryIds = selectedCategories.map(category => category.id);
 
   return useQuery({
-    queryKey: [QUERY_KEYS.POSTS, categoryIds],
-    queryFn: () => postsApi.fetch(categoryIds),
+    queryKey: [QUERY_KEYS.POSTS, categoryIds, page, perPage],
+    queryFn: () =>
+      postsApi.fetch({
+        categoryIds,
+        page,
+        perPage,
+      }),
   });
 };
 

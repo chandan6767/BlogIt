@@ -21,7 +21,7 @@ const Show = ({ history }) => {
   if (isLoading) {
     return (
       <Container>
-        <PageLoader />
+        <PageLoader className="flex-1" />
       </Container>
     );
   }

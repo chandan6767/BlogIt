@@ -1,3 +1,4 @@
+import { keysToSnakeCase } from "@bigbinary/neeto-cist";
 import { Toastr } from "@bigbinary/neetoui";
 import axios from "axios";
 import { getFromLocalStorage, setToLocalStorage } from "utils/storage";
@@ -53,6 +54,14 @@ const handleErrorResponse = axiosErrorObject => {
 };
 
 const registerIntercepts = () => {
+  axios.interceptors.request.use(config => {
+    if (config.params) {
+      config.params = keysToSnakeCase(config.params);
+    }
+
+    return config;
+  });
+
   axios.interceptors.response.use(handleSuccessResponse, error =>
     handleErrorResponse(error)
   );

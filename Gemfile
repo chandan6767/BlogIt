@@ -43,6 +43,9 @@ gem "bootsnap", require: false
 # React.js for Rails
 gem "react-rails", "~> 2.7.1"
 
+# Kaminari for pagination (https://github.com/kaminari/kaminari)
+gem "kaminari"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ]
