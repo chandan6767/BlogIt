@@ -1,10 +1,20 @@
 # frozen_string_literal: true
 
 class Post < ApplicationRecord
+  scope :by_category_ids, ->(ids) {
+    return all if ids.blank?
+
+    joins(:categories).where(categories: { id: ids }).distinct
+  }
+
   MAX_TITLE_LENGTH = 125
   MAX_DESCRIPTION_LENGTH = 10000
   VALID_TITLE_REGEX = /\A.*[a-zA-Z0-9].*\z/i
   VALID_BLOGGABLE_VALUES = [true, false].freeze
+
+  belongs_to :user
+  belongs_to :organization
+  has_and_belongs_to_many :categories
 
   validates :title,
     presence: true,

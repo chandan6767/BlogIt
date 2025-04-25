@@ -11,7 +11,7 @@ const Item = ({ to, icon: Icon, className }) => (
       classNames(
         "flex items-center justify-center rounded p-2 text-center transition-colors duration-150",
         { "hover:bg-gray-100": !className },
-        { "bg-gray-100 hover:bg-gray-100": isActive },
+        { "bg-gray-100 hover:bg-gray-100": isActive && !className },
         className
       )
     }

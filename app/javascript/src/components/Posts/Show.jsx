@@ -1,50 +1,52 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 
-import { Calendar } from "@bigbinary/neeto-icons";
-import { Typography } from "@bigbinary/neetoui";
-import postsApi from "apis/posts";
+import { Avatar, Typography } from "@bigbinary/neetoui";
 import { Container, PageLoader } from "components/commons";
-import dayjs from "dayjs";
+import { useShowPost } from "hooks/reactQuery/usePostsApi";
 import { useParams } from "react-router-dom";
 
+import List from "./Category/List";
+import { formatDate } from "./utils";
+
+import routes from "~/routes";
+
 const Show = ({ history }) => {
-  const [post, setPost] = useState([]);
-  const [pageLoading, setPageLoading] = useState(true);
   const { slug } = useParams();
 
-  const fetchPostDetails = async () => {
-    try {
-      const {
-        data: { post },
-      } = await postsApi.show(slug);
-      setPost(post);
-      setPageLoading(false);
-    } catch (error) {
-      logger.error(error);
-      history.push("/");
-    }
-  };
+  const { data, isLoading, isError } = useShowPost(slug);
+  const post = data?.data?.post || null;
 
-  useEffect(() => {
-    fetchPostDetails();
-  }, []);
+  if (isError) history.push(routes.root);
 
-  if (pageLoading) {
-    return <PageLoader />;
+  if (isLoading) {
+    return (
+      <Container>
+        <PageLoader className="flex-1" />
+      </Container>
+    );
   }
 
-  const createdAt = dayjs(post?.created_at).format("D MMMM YYYY");
+  const createdAt = formatDate(post?.created_at);
 
   return (
     <Container>
-      <div className="mx-auto w-full max-w-[1280px] space-y-4 py-[3vw]">
+      <div className="mx-auto w-full max-w-7xl space-y-6 p-[5vw]">
         <div className="space-y-4 border-b border-dashed pb-4">
+          <List categories={post?.categories} />
           <Typography className="font-libre-baskerville font-bold" style="h1">
             {post?.title}
           </Typography>
-          <div className="flex items-center gap-8">
-            <div className="flex items-center gap-2 font-roboto text-bb-gray-600">
-              <Calendar className="size-5" />
+          <div className="flex items-center gap-4">
+            <Avatar
+              size="large"
+              user={{
+                name: post?.user.name,
+              }}
+            />
+            <div className="font-roboto">
+              <Typography className="font-medium" style="body1">
+                {post?.user.name}
+              </Typography>
               <Typography style="body2">{createdAt}</Typography>
             </div>
           </div>
