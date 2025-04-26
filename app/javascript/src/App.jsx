@@ -1,5 +1,6 @@
 import React from "react";
 
+import Signup from "components/Authentication/Signup";
 import Home from "components/Home";
 import { CreatePost, ShowPost } from "components/Posts";
 import { QueryClientProvider } from "react-query";
@@ -17,6 +18,7 @@ const App = () => (
         <Route exact component={ShowPost} path={routes.posts.show} />
         <Route exact component={CreatePost} path={routes.posts.create} />
         <Route exact component={Home} path={routes.root} />
+        <Route exact component={Signup} path={routes.auth.signup} />
       </Switch>
     </Router>
   </QueryClientProvider>
