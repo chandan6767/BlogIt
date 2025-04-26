@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 
 import SignupForm from "components/Authentication/Form/Signup";
-import { PageLoader } from "components/commons";
 import { useSignup } from "hooks/reactQuery/useAuthApi";
 import { useFetchOrganizations } from "hooks/reactQuery/useOrganizationsApi";
 import Logger from "js-logger";
@@ -15,7 +14,7 @@ const Signup = ({ history }) => {
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [selectedOrganizationId, setSelectedOrganizationId] = useState(null);
 
-  const { data, isLoading: organizationsLoading } = useFetchOrganizations();
+  const { data, isLoading: isOrganizationsLoading } = useFetchOrganizations();
   const organizations = data?.data?.organizations || [];
 
   const { mutateAsync: signup, isLoading: signupLoading } = useSignup({
@@ -38,13 +37,10 @@ const Signup = ({ history }) => {
     });
   };
 
-  if (organizationsLoading) {
-    return <PageLoader />;
-  }
-
   return (
     <SignupForm
       handleSubmit={handleSubmit}
+      isOrganizationsLoading={isOrganizationsLoading}
       loading={signupLoading}
       organizations={organizations}
       setEmail={setEmail}

@@ -16,6 +16,7 @@ const Signup = ({
   setPasswordConfirmation,
   setSelectedOrganizationId,
   organizations,
+  isOrganizationsLoading,
 }) => {
   const organizationOptions = buildOrganizationOptions(organizations);
 
@@ -54,6 +55,7 @@ const Signup = ({
             onChange={e => setEmail(e.target.value)}
           />
           <Select
+            isDisabled={isOrganizationsLoading}
             label="Organization"
             options={organizationOptions}
             placeholder="Select organizations"

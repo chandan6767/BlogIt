@@ -17,3 +17,18 @@ export const useSignup = ({ onSuccess, onError } = {}) => {
     },
   });
 };
+
+export const useLogin = ({ onSuccess, onError } = {}) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: payload => authApi.login(payload),
+    onSuccess: (...args) => {
+      queryClient.invalidateQueries([QUERY_KEYS.USER]);
+      onSuccess?.(...args);
+    },
+    onError: (...args) => {
+      onError?.(...args);
+    },
+  });
+};
