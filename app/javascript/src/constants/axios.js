@@ -3,4 +3,5 @@ export const API_ENDPOINTS = {
   CATEGORIES: "/categories",
   USERS: "/users",
   ORGANIZATIONS: "/organizations",
+  SESSION: "/session",
 };
