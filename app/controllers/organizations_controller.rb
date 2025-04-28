@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-class HomeController < ApplicationController
+class OrganizationsController < ApplicationController
   skip_before_action :authenticate_user_using_x_auth_token
 
   def index
-    render
+    @organizations = Organization.order(created_at: :desc)
   end
 end

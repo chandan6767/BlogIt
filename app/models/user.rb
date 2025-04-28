@@ -24,6 +24,7 @@ class User < ApplicationRecord
   before_save :normalize_email
 
   has_secure_password
+  has_secure_token :authentication_token
 
   private
 

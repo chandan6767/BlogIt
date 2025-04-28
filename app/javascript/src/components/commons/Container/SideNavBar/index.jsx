@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 
 import { Articles, Book, Draft, Folder } from "@bigbinary/neeto-icons";
-import { Avatar, Button } from "@bigbinary/neetoui";
+import { Button } from "@bigbinary/neetoui";
 
 import Categories from "./Categories";
 import Item from "./Item";
+import UserProfile from "./UserProfile";
 
 import routes from "~/routes";
 
 const SideNavBar = () => {
   const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
-
   const toggleCategoriesOpen = () => setIsCategoriesOpen(prev => !prev);
 
   return (
@@ -32,11 +32,7 @@ const SideNavBar = () => {
             onClick={toggleCategoriesOpen}
           />
         </nav>
-        <Avatar
-          user={{
-            imageUrl: "https://avatars.githubusercontent.com/u/200895547?v=4",
-          }}
-        />
+        <UserProfile />
       </aside>
       {isCategoriesOpen && <Categories />}
     </div>
