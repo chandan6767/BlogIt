@@ -39,7 +39,7 @@ const Show = ({ history }) => {
       <div className="mx-auto w-full max-w-7xl space-y-6 p-[5vw]">
         <div className="space-y-4 border-b border-dashed pb-4">
           <List categories={post?.categories} />
-          <div className="flex items-start justify-between">
+          <div className="flex items-start justify-between gap-4">
             <Typography className="font-libre-baskerville font-bold" style="h1">
               {post?.title}
             </Typography>

@@ -1,14 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { ExternalLink } from "@bigbinary/neeto-icons";
 import { Button } from "@bigbinary/neetoui";
 import { Container, Header } from "components/commons";
 import { useFetchCategories } from "hooks/reactQuery/useCategoriesApi";
 import { useCreatePost } from "hooks/reactQuery/usePostsApi";
+import useLocalStorage from "hooks/useLocalStorage";
 import Logger from "js-logger";
+import { isEmpty, isNil } from "ramda";
 
 import ActionWithDropdown from "./ActionWithDropdown";
-import { POST_STATUS } from "./constants";
+import { POST_CREATE_PREVIEW_DATA_KEY, POST_STATUS } from "./constants";
 import Form from "./Form";
 
 import routes from "~/routes";
@@ -19,11 +21,18 @@ const Create = ({ history }) => {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [status, setStatus] = useState(POST_STATUS.DRAFT);
 
+  const [previewData, setPreviewData, clearPreviewData] = useLocalStorage(
+    POST_CREATE_PREVIEW_DATA_KEY,
+    {},
+    60 * 60 * 1000
+  );
+
   const { data, isLoading: isCategoriesLoading } = useFetchCategories();
   const categories = data?.data?.categories || [];
 
   const { mutate, isLoading } = useCreatePost({
     onSuccess: () => {
+      clearPreviewData();
       history.replace(routes.root);
     },
     onError: error => {
@@ -44,6 +53,30 @@ const Create = ({ history }) => {
     });
   };
 
+  const handlePreview = () => {
+    history.push(routes.posts.preview);
+  };
+
+  useEffect(() => {
+    const hasPreviewData = !isEmpty(previewData) && !isNil(previewData);
+
+    if (hasPreviewData) {
+      setTitle(previewData.title || "");
+      setDescription(previewData.description || "");
+      setSelectedCategories(previewData.categories || []);
+      clearPreviewData();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    setPreviewData({
+      title,
+      description,
+      categories: selectedCategories,
+    });
+  }, [title, description, selectedCategories, setPreviewData]);
+
   return (
     <Container>
       <div className="mx-auto w-full max-w-7xl flex-1 space-y-6 overflow-y-auto px-[5vw] pt-[3vw]">
@@ -58,6 +91,7 @@ const Create = ({ history }) => {
                   content: "Preview",
                   position: "top",
                 }}
+                onClick={handlePreview}
               />
               <Button label="Cancel" style="secondary" onClick={handleCancel} />
               <ActionWithDropdown

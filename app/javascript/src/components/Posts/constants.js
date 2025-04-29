@@ -5,3 +5,5 @@ export const POST_STATUS = {
   PUBLISHED: "published",
   DRAFT: "draft",
 };
+export const POST_CREATE_PREVIEW_DATA_KEY = "postCreatePreviewData";
+export const POST_EDIT_PREVIEW_DATA_KEY = "postEditPreviewData";

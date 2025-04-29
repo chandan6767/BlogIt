@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { Delete, MenuHorizontal } from "@bigbinary/neeto-icons";
+import { Delete, ExternalLink, MenuHorizontal } from "@bigbinary/neeto-icons";
 import { Alert, Button, Dropdown, Typography } from "@bigbinary/neetoui";
 import { Container, Header } from "components/commons";
 import { useFetchCategories } from "hooks/reactQuery/useCategoriesApi";
@@ -9,11 +9,12 @@ import {
   useShowPost,
   useUpdatePost,
 } from "hooks/reactQuery/usePostsApi";
+import useLocalStorage from "hooks/useLocalStorage";
 import Logger from "js-logger";
 import { useParams } from "react-router-dom";
 
 import ActionWithDropdown from "./ActionWithDropdown";
-import { POST_STATUS } from "./constants";
+import { POST_EDIT_PREVIEW_DATA_KEY, POST_STATUS } from "./constants";
 import Form from "./Form";
 import { formatDate } from "./utils";
 
@@ -28,12 +29,21 @@ const Edit = ({ history }) => {
 
   const { slug } = useParams();
 
+  const previewKey = `${POST_EDIT_PREVIEW_DATA_KEY}::${slug}`;
+
+  const [previewData, setPreviewData, clearPreviewData] = useLocalStorage(
+    previewKey,
+    null,
+    10 * 60 * 1000
+  );
+
   const { data: postData, isLoading: isPostLoading } = useShowPost(slug);
   const { data: categoryData } = useFetchCategories();
   const categories = categoryData?.data?.categories || [];
 
   const { mutate, isLoading: isUpdating } = useUpdatePost({
     onSuccess: () => {
+      clearPreviewData();
       history.replace(routes.posts.show.replace(":slug", slug));
     },
     onError: error => {
@@ -43,6 +53,7 @@ const Edit = ({ history }) => {
 
   const { mutate: deletePost } = useDeletePost({
     onSuccess: () => {
+      clearPreviewData();
       history.replace(routes.root);
     },
     onError: error => {
@@ -51,14 +62,44 @@ const Edit = ({ history }) => {
   });
 
   useEffect(() => {
-    if (postData?.data?.post) {
-      const post = postData.data.post;
+    // TODO Bring formik into action
+    const hasValidPreview = Boolean(
+      previewData &&
+        typeof previewData === "object" &&
+        previewData.title?.trim() &&
+        previewData.description?.trim() &&
+        Array.isArray(previewData.categories) &&
+        previewData.categories.length > 0
+    );
+    const post = postData?.data?.post;
+
+    if (hasValidPreview) {
+      setTitle(previewData.title);
+      setDescription(previewData.description);
+      setSelectedCategories(previewData.categories);
+      setStatus(previewData.status);
+    } else if (post) {
       setTitle(post.title);
       setDescription(post.description);
       setSelectedCategories(post.categories);
       setStatus(post.status);
     }
-  }, [postData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const isDirty = title || description || selectedCategories.length > 0;
+
+    if (isDirty) {
+      setPreviewData({
+        title,
+        description,
+        categories: selectedCategories,
+        status,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [title, description, selectedCategories, status]);
 
   const handleCancel = () => {
     history.replace(routes.posts.show.replace(":slug", slug));
@@ -81,6 +122,10 @@ const Edit = ({ history }) => {
     setShowAlert(false);
   };
 
+  const handlePreview = () => {
+    history.push(`${routes.posts.preview}?source=edit&slug=${slug}`);
+  };
+
   const lastPublished = formatDate(
     postData?.data?.post?.updated_at,
     "HH:mmA, D MMMM YYYY"
@@ -101,6 +146,15 @@ const Edit = ({ history }) => {
                 {isPublished ? "Last published at " : "Draft saved at "}
                 <span className="font-medium">{lastPublished}</span>
               </Typography>
+              <Button
+                icon={ExternalLink}
+                style="text"
+                tooltipProps={{
+                  content: "Preview",
+                  position: "top",
+                }}
+                onClick={handlePreview}
+              />
               <Button label="Cancel" style="secondary" onClick={handleCancel} />
               <ActionWithDropdown
                 isDisabled={isDisableSubmitAction}
