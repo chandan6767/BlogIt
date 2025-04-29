@@ -9,6 +9,9 @@ const routes = {
     signup: "/signup",
     login: "/login",
   },
+  my: {
+    posts: "/my/posts",
+  },
 };
 
 export default routes;

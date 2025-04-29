@@ -5,6 +5,7 @@ import { Avatar, Button, Tag, Typography } from "@bigbinary/neetoui";
 import { Container, PageLoader } from "components/commons";
 import { useShowPost } from "hooks/reactQuery/usePostsApi";
 import { Link, useParams } from "react-router-dom";
+import { getFromLocalStorage } from "utils/storage";
 
 import List from "./Category/List";
 import { POST_STATUS } from "./constants";
@@ -13,6 +14,8 @@ import { formatDate } from "./utils";
 import routes from "~/routes";
 
 const Show = ({ history }) => {
+  const currentUserId = Number(getFromLocalStorage("authUserId"));
+
   const { slug } = useParams();
 
   const { data, isLoading, isError } = useShowPost(slug);
@@ -44,17 +47,20 @@ const Show = ({ history }) => {
               {isDraft && (
                 <Tag label="Draft" size="large" style="danger" type="solid" />
               )}
-              <Link to="edit">
-                <Button
-                  icon={Edit}
-                  size="large"
-                  style="text"
-                  tooltipProps={{
-                    content: "Edit",
-                    position: "top",
-                  }}
-                />
-              </Link>
+              {/* TODO protect from backend too using Pundit */}
+              {post?.user?.id === currentUserId && (
+                <Link to="edit">
+                  <Button
+                    icon={Edit}
+                    size="large"
+                    style="text"
+                    tooltipProps={{
+                      content: "Edit",
+                      position: "top",
+                    }}
+                  />
+                </Link>
+              )}
             </div>
           </div>
           <div className="flex items-center gap-4">

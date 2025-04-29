@@ -3,7 +3,7 @@ import React from "react";
 import { Login, Signup } from "components/Authentication";
 import { PrivateRoute } from "components/commons";
 import Home from "components/Home";
-import { CreatePost, EditPost, ShowPost } from "components/Posts";
+import { CreatePost, EditPost, MyPosts, ShowPost } from "components/Posts";
 import { either, isEmpty, isNil } from "ramda";
 import { QueryClientProvider } from "react-query";
 import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
@@ -22,6 +22,7 @@ const App = () => {
       <Router>
         <ToastContainer />
         <Switch>
+          <Route exact component={MyPosts} path={routes.my.posts} />
           <Route exact component={EditPost} path={routes.posts.edit} />
           <Route exact component={ShowPost} path={routes.posts.show} />
           <Route exact component={CreatePost} path={routes.posts.create} />

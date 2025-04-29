@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from "react";
 
 import { Delete, MenuHorizontal } from "@bigbinary/neeto-icons";
-import { Button, Dropdown, Typography } from "@bigbinary/neetoui";
+import { Alert, Button, Dropdown, Typography } from "@bigbinary/neetoui";
 import { Container, Header } from "components/commons";
 import { useFetchCategories } from "hooks/reactQuery/useCategoriesApi";
-import { useShowPost, useUpdatePost } from "hooks/reactQuery/usePostsApi";
+import {
+  useDeletePost,
+  useShowPost,
+  useUpdatePost,
+} from "hooks/reactQuery/usePostsApi";
 import Logger from "js-logger";
 import { useParams } from "react-router-dom";
 
@@ -21,6 +25,7 @@ const Edit = ({ history }) => {
   const [description, setDescription] = useState("");
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [status, setStatus] = useState(POST_STATUS.DRAFT);
+  const [showAlert, setShowAlert] = useState(false);
 
   const { slug } = useParams();
 
@@ -31,6 +36,15 @@ const Edit = ({ history }) => {
   const { mutate, isLoading: isUpdating } = useUpdatePost({
     onSuccess: () => {
       history.replace(routes.posts.show.replace(":slug", slug));
+    },
+    onError: error => {
+      Logger.error(error);
+    },
+  });
+
+  const { mutate: deletePost } = useDeletePost({
+    onSuccess: () => {
+      history.replace(routes.root);
     },
     onError: error => {
       Logger.error(error);
@@ -63,9 +77,14 @@ const Edit = ({ history }) => {
     });
   };
 
+  const confirmDelete = () => {
+    deletePost(slug);
+    setShowAlert(false);
+  };
+
   const lastPublished = formatDate(
     postData?.data?.post?.updated_at,
-    "HH:mmA D MMMM YYYY"
+    "HH:mmA, D MMMM YYYY"
   );
 
   const isPublished = postData?.data?.post?.status === "published";
@@ -105,6 +124,7 @@ const Edit = ({ history }) => {
                     className="text-right"
                     prefix={<Delete size={16} />}
                     style="danger"
+                    onClick={() => setShowAlert(true)}
                   >
                     Delete
                   </Dropdown.MenuItem.Button>
@@ -126,6 +146,15 @@ const Edit = ({ history }) => {
           />
         </div>
       </div>
+      <Alert
+        cancelButtonLabel="No"
+        isOpen={showAlert}
+        message="Are you sure you want to delete this post?"
+        submitButtonLabel="Yes"
+        title="Delete post"
+        onClose={() => setShowAlert(false)}
+        onSubmit={confirmDelete}
+      />
     </Container>
   );
 };
