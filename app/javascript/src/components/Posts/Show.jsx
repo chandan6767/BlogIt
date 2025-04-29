@@ -47,7 +47,6 @@ const Show = ({ history }) => {
               {isDraft && (
                 <Tag label="Draft" size="large" style="danger" type="solid" />
               )}
-              {/* TODO protect from backend too using Pundit */}
               {post?.user?.id === currentUserId && (
                 <Link to="edit">
                   <Button

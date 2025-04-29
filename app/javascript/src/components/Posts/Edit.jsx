@@ -19,7 +19,6 @@ import { formatDate } from "./utils";
 
 import routes from "~/routes";
 
-// TODO implement Pundit
 const Edit = ({ history }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");

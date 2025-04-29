@@ -4,6 +4,8 @@ class PostsController < ApplicationController
   DEFAULT_PAGE_SIZE = 5
 
   before_action :load_post!, only: %i[show update destroy]
+  before_action :authorize_post, only: %i[create show update destroy]
+  after_action :verify_authorized, except: :index
 
   def index
     @posts = Post.includes(:categories, :user, :organization)
@@ -65,5 +67,9 @@ class PostsController < ApplicationController
       else
         scope
       end
+    end
+
+    def authorize_post
+      authorize @post
     end
 end
