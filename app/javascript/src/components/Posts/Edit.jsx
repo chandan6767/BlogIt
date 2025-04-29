@@ -1,60 +1,78 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { Container, Header } from "components/commons";
 import { useFetchCategories } from "hooks/reactQuery/useCategoriesApi";
-import { useCreatePost } from "hooks/reactQuery/usePostsApi";
+import { useShowPost, useUpdatePost } from "hooks/reactQuery/usePostsApi";
 import Logger from "js-logger";
+import { useParams } from "react-router-dom";
 
 import Form from "./Form";
 
 import routes from "~/routes";
 
-const Create = ({ history }) => {
+// TODO implement Pundit
+const Edit = ({ history }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [selectedCategories, setSelectedCategories] = useState([]);
 
-  const { data } = useFetchCategories();
-  const categories = data?.data?.categories || [];
+  const { slug } = useParams();
 
-  const { mutate, isLoading } = useCreatePost({
+  const { data: postData, isLoading: isPostLoading } = useShowPost(slug);
+  const { data: categoryData } = useFetchCategories();
+  const categories = categoryData?.data?.categories || [];
+
+  const { mutate, isLoading: isUpdating } = useUpdatePost({
     onSuccess: () => {
-      history.replace(routes.root);
+      history.replace(routes.posts.show.replace(":slug", slug));
     },
     onError: error => {
       Logger.error(error);
     },
   });
 
+  useEffect(() => {
+    if (postData?.data?.post) {
+      const post = postData.data.post;
+      setTitle(post.title);
+      setDescription(post.description);
+      setSelectedCategories(post.categories);
+    }
+  }, [postData]);
+
   const handleCancel = () => {
-    history.replace(routes.root);
+    history.replace(routes.posts.show.replace(":slug", slug));
   };
 
   const handleSubmit = event => {
     event.preventDefault();
     mutate({
-      title,
-      description,
-      category_ids: selectedCategories.map(category => category.id),
+      payload: {
+        title,
+        description,
+        category_ids: selectedCategories.map(category => category.id),
+      },
+      slug,
     });
   };
 
   return (
     <Container>
       <div className="mx-auto w-full max-w-7xl flex-1 space-y-6 overflow-y-auto px-[5vw] pt-[3vw]">
-        <Header pageTitle="Add new post" />
+        <Header pageTitle="Edit post" />
         <div className="rounded-3xl border p-[3vw] shadow-lg">
           <Form
             categories={categories}
             description={description}
             handleCancel={handleCancel}
             handleSubmit={handleSubmit}
-            loading={isLoading}
+            loading={isPostLoading || isUpdating}
             selectedCategories={selectedCategories}
             setDescription={setDescription}
             setSelectedCategories={setSelectedCategories}
             setTitle={setTitle}
             title={title}
+            type="update"
           />
         </div>
       </div>
@@ -62,4 +80,4 @@ const Create = ({ history }) => {
   );
 };
 
-export default Create;
+export default Edit;

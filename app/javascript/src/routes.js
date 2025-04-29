@@ -3,6 +3,7 @@ const routes = {
   posts: {
     create: "/posts/create",
     show: "/posts/:slug/show",
+    edit: "/posts/:slug/edit",
   },
   auth: {
     signup: "/signup",

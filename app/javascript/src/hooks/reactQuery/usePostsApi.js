@@ -46,3 +46,18 @@ export const useCreatePost = ({ onSuccess, onError } = {}) => {
     },
   });
 };
+
+export const useUpdatePost = ({ onSuccess, onError } = {}) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ payload, slug }) => postsApi.update(payload, slug),
+    onSuccess: (...args) => {
+      queryClient.invalidateQueries([QUERY_KEYS.POSTS]);
+      onSuccess?.(...args);
+    },
+    onError: (...args) => {
+      onError?.(...args);
+    },
+  });
+};

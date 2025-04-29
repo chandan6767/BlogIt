@@ -1,9 +1,10 @@
 import React from "react";
 
-import { Avatar, Typography } from "@bigbinary/neetoui";
+import { Edit } from "@bigbinary/neeto-icons";
+import { Avatar, Button, Typography } from "@bigbinary/neetoui";
 import { Container, PageLoader } from "components/commons";
 import { useShowPost } from "hooks/reactQuery/usePostsApi";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 import List from "./Category/List";
 import { formatDate } from "./utils";
@@ -16,7 +17,7 @@ const Show = ({ history }) => {
   const { data, isLoading, isError } = useShowPost(slug);
   const post = data?.data?.post || null;
 
-  if (isError) history.push(routes.root);
+  if (isError) history.replace(routes.root);
 
   if (isLoading) {
     return (
@@ -33,9 +34,16 @@ const Show = ({ history }) => {
       <div className="mx-auto w-full max-w-7xl space-y-6 p-[5vw]">
         <div className="space-y-4 border-b border-dashed pb-4">
           <List categories={post?.categories} />
-          <Typography className="font-libre-baskerville font-bold" style="h1">
-            {post?.title}
-          </Typography>
+          <div className="flex items-start justify-between">
+            <Typography className="font-libre-baskerville font-bold" style="h1">
+              {post?.title}
+            </Typography>
+            <div className="flex items-center justify-end">
+              <Link to="edit">
+                <Button icon={Edit} size="large" style="text" />
+              </Link>
+            </div>
+          </div>
           <div className="flex items-center gap-4">
             <Avatar
               size="large"

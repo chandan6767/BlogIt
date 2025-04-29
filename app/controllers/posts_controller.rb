@@ -3,6 +3,8 @@
 class PostsController < ApplicationController
   DEFAULT_PAGE_SIZE = 5
 
+  before_action :load_post!, only: %i[show update]
+
   def index
     @posts = Post.includes(:categories, :user, :organization)
       .where(organization_id: @current_user.organization_id)
@@ -18,9 +20,11 @@ class PostsController < ApplicationController
   end
 
   def show
-    @post = Post.includes(:categories, :user).find_by!(
-      slug: params[:slug],
-      organization_id: @current_user.organization_id)
+  end
+
+  def update
+    @post.update!(post_params)
+    render_notice(t("successfully_updated", name: @post.title))
   end
 
   private
@@ -28,5 +32,11 @@ class PostsController < ApplicationController
     def post_params
       params.require(:post)
         .permit(:title, :description, :user_id, category_ids: [])
+    end
+
+    def load_post!
+      @post = Post.includes(:categories, :user).find_by!(
+        slug: params[:slug],
+        organization_id: @current_user.organization_id)
     end
 end

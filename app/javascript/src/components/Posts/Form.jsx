@@ -21,12 +21,18 @@ const Form = ({
   handleCancel,
   categories,
   setSelectedCategories,
+  selectedCategories,
 }) => {
   const titleMaxLength = TITLE_MAX_CHARACTERS;
   const descriptionMaxLength = DESCRIPTION_MAX_CHARACTERS;
   const defaultRows = DESCRIPTION_DEFAULT_ROWS;
 
   const categoryOptions = buildCategoryOptions(categories);
+  const selectedOptions = buildCategoryOptions(
+    categories.filter(category =>
+      selectedCategories.some(selected => selected.id === category.id)
+    )
+  );
 
   return (
     <form
@@ -59,8 +65,14 @@ const Form = ({
           label="Category"
           options={categoryOptions}
           placeholder="Search category"
+          value={selectedOptions}
           onChange={selectedOptions =>
-            setSelectedCategories(selectedOptions.map(option => option.value))
+            setSelectedCategories(
+              selectedOptions.map(option => ({
+                id: option.value,
+                name: option.label,
+              }))
+            )
           }
         />
       </div>
