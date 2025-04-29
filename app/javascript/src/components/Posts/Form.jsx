@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Button, Input, Select, Textarea } from "@bigbinary/neetoui";
+import { Input, Select, Textarea } from "@bigbinary/neetoui";
 import classNames from "classnames";
 
 import {
@@ -8,17 +8,14 @@ import {
   DESCRIPTION_MAX_CHARACTERS,
   TITLE_MAX_CHARACTERS,
 } from "./constants";
-import { buildCategoryOptions } from "./utils";
+import { buildCategoryOptions, filterSelectedCategories } from "./utils";
 
 const Form = ({
-  type = "create",
   title,
   description,
   setTitle,
   setDescription,
-  loading,
-  handleSubmit,
-  handleCancel,
+  isCategoriesLoading,
   categories,
   setSelectedCategories,
   selectedCategories,
@@ -29,16 +26,19 @@ const Form = ({
 
   const categoryOptions = buildCategoryOptions(categories);
   const selectedOptions = buildCategoryOptions(
-    categories.filter(category =>
-      selectedCategories.some(selected => selected.id === category.id)
-    )
+    filterSelectedCategories(categories, selectedCategories)
   );
 
+  const handleCategoriesChange = selectedOptions =>
+    setSelectedCategories(
+      selectedOptions.map(option => ({
+        id: option.value,
+        name: option.label,
+      }))
+    );
+
   return (
-    <form
-      className="mx-auto w-full max-w-7xl space-y-4"
-      onSubmit={handleSubmit}
-    >
+    <form className="mx-auto w-full max-w-7xl space-y-4">
       <div className="relative w-full">
         <Input
           required
@@ -62,18 +62,12 @@ const Form = ({
           isMulti
           isSearchable
           required
+          disabled={isCategoriesLoading}
           label="Category"
           options={categoryOptions}
           placeholder="Search category"
           value={selectedOptions}
-          onChange={selectedOptions =>
-            setSelectedCategories(
-              selectedOptions.map(option => ({
-                id: option.value,
-                name: option.label,
-              }))
-            )
-          }
+          onChange={handleCategoriesChange}
         />
       </div>
       <div className="relative w-full">
@@ -96,21 +90,6 @@ const Form = ({
         >
           {description.length}/{descriptionMaxLength}
         </span>
-      </div>
-      <div className="flex justify-end gap-2">
-        <Button
-          label="Cancel"
-          loading={loading}
-          style="secondary"
-          type="reset"
-          onClick={handleCancel}
-        />
-        <Button
-          disabled={loading || !title.trim() || !description.trim()}
-          label={type === "create" ? "Create Post" : "Update Post"}
-          loading={loading}
-          type="submit"
-        />
       </div>
     </form>
   );

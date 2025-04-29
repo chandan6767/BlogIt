@@ -1,12 +1,13 @@
 import React from "react";
 
 import { Edit } from "@bigbinary/neeto-icons";
-import { Avatar, Button, Typography } from "@bigbinary/neetoui";
+import { Avatar, Button, Tag, Typography } from "@bigbinary/neetoui";
 import { Container, PageLoader } from "components/commons";
 import { useShowPost } from "hooks/reactQuery/usePostsApi";
 import { Link, useParams } from "react-router-dom";
 
 import List from "./Category/List";
+import { POST_STATUS } from "./constants";
 import { formatDate } from "./utils";
 
 import routes from "~/routes";
@@ -27,7 +28,8 @@ const Show = ({ history }) => {
     );
   }
 
-  const createdAt = formatDate(post?.created_at);
+  const lastPublished = formatDate(post?.updated_at);
+  const isDraft = post?.status === POST_STATUS.DRAFT;
 
   return (
     <Container>
@@ -38,9 +40,20 @@ const Show = ({ history }) => {
             <Typography className="font-libre-baskerville font-bold" style="h1">
               {post?.title}
             </Typography>
-            <div className="flex items-center justify-end">
+            <div className="flex items-center justify-end gap-2">
+              {isDraft && (
+                <Tag label="Draft" size="large" style="danger" type="solid" />
+              )}
               <Link to="edit">
-                <Button icon={Edit} size="large" style="text" />
+                <Button
+                  icon={Edit}
+                  size="large"
+                  style="text"
+                  tooltipProps={{
+                    content: "Edit",
+                    position: "top",
+                  }}
+                />
               </Link>
             </div>
           </div>
@@ -55,7 +68,7 @@ const Show = ({ history }) => {
               <Typography className="font-medium" style="body1">
                 {post?.user.name}
               </Typography>
-              <Typography style="body2">{createdAt}</Typography>
+              <Typography style="body2">{lastPublished}</Typography>
             </div>
           </div>
         </div>

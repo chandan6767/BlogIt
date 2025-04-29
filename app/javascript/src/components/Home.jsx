@@ -68,11 +68,7 @@ const Home = () => {
         <Header
           pageTitle="Blog posts"
           actionBlock={
-            <Button
-              label="Add new blog post"
-              size="large"
-              onClick={navigateToCreatePost}
-            />
+            <Button label="Add new blog post" onClick={navigateToCreatePost} />
           }
         />
         <div className="flex flex-1 flex-col">

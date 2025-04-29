@@ -1,3 +1,7 @@
 export const TITLE_MAX_CHARACTERS = 125;
 export const DESCRIPTION_MAX_CHARACTERS = 10000;
 export const DESCRIPTION_DEFAULT_ROWS = 50;
+export const POST_STATUS = {
+  PUBLISHED: "published",
+  DRAFT: "draft",
+};
