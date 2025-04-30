@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 
-import { Articles, Book, Draft, Folder } from "@bigbinary/neeto-icons";
+import {
+  Articles,
+  Book,
+  Dashboard,
+  Draft,
+  Folder,
+} from "@bigbinary/neeto-icons";
 import { Button } from "@bigbinary/neetoui";
 
 import Categories from "./Categories";
@@ -31,6 +37,7 @@ const SideNavBar = () => {
             style="text"
             onClick={toggleCategoriesOpen}
           />
+          <Item icon={Dashboard} to={routes.my.posts} />
         </nav>
         <UserProfile />
       </aside>

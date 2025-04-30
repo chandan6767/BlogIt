@@ -1,6 +1,6 @@
 import { DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE } from "constants/pagination";
 
-import React from "react";
+import React, { useEffect } from "react";
 
 import { Paragraph } from "@bigbinary/neeto-icons";
 import { Button, Pagination } from "@bigbinary/neetoui";
@@ -14,6 +14,7 @@ import useCategoryStore from "stores/useCategoryStore";
 import { buildUrl } from "utils/url";
 
 import Header from "./commons/Header";
+import { POST_STATUS } from "./Posts/constants";
 
 import routes from "~/routes";
 
@@ -25,9 +26,15 @@ const Home = () => {
   const { selected } = useCategoryStore();
 
   const currentPage = Number(propOr(DEFAULT_PAGE_NUMBER, "page", queryParams));
-  const perPage = Number(propOr(DEFAULT_PAGE_SIZE, "per_page", queryParams));
+  const perPage = Number(propOr(DEFAULT_PAGE_SIZE, "perPage", queryParams));
 
-  const { data, isLoading } = useFetchPosts(selected, currentPage, perPage);
+  const { data, isLoading } = useFetchPosts({
+    selectedCategories: selected,
+    page: currentPage,
+    perPage,
+    status: POST_STATUS.PUBLISHED,
+  });
+
   const posts = data?.data?.posts || [];
   const meta = data?.data?.meta || {};
 
@@ -41,10 +48,11 @@ const Home = () => {
     history.push(routes.posts.create);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isLoading && meta.total_pages && currentPage > meta.total_pages) {
       handlePageNavigation(1);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [meta, currentPage, isLoading, history, queryParams]);
 
   const noPostsAvailable = either(isNil, isEmpty)(posts);
@@ -68,11 +76,7 @@ const Home = () => {
         <Header
           pageTitle="Blog posts"
           actionBlock={
-            <Button
-              label="Add new blog post"
-              size="large"
-              onClick={navigateToCreatePost}
-            />
+            <Button label="Add new blog post" onClick={navigateToCreatePost} />
           }
         />
         <div className="flex flex-1 flex-col">

@@ -10,7 +10,7 @@ const List = ({ categories }) => {
   return (
     <div className="flex items-center gap-2">
       {categories.map(category => (
-        <Badge key={category.id} {...category} />
+        <Badge key={category.name} {...category} />
       ))}
     </div>
   );

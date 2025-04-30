@@ -12,6 +12,8 @@ class Post < ApplicationRecord
   VALID_TITLE_REGEX = /\A.*[a-zA-Z0-9].*\z/i
   VALID_BLOGGABLE_VALUES = [true, false].freeze
 
+  enum status: { draft: 0, published: 1 }
+
   belongs_to :user
   belongs_to :organization
   has_and_belongs_to_many :categories
