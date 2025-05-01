@@ -107,7 +107,8 @@ class PostTest < ActiveSupport::TestCase
   end
 
   def test_post_should_not_be_valid_without_user
-    post = Post.new(title: "No User", description: "This post has no user", organization: @organization)
+    post = build(:post)
+    post.user = nil
     assert_not post.valid?
     assert_includes post.errors.full_messages, "User must exist"
   end

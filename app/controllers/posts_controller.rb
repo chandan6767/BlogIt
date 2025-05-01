@@ -4,7 +4,7 @@ class PostsController < ApplicationController
   DEFAULT_PAGE_SIZE = 5
 
   before_action :load_post!, only: %i[show update destroy]
-  before_action :authorize_post, only: %i[create show update destroy]
+  before_action :authorize_post, only: %i[show update destroy]
   after_action :verify_authorized, except: :index
 
   def index
@@ -19,7 +19,12 @@ class PostsController < ApplicationController
   end
 
   def create
-    post = Post.create!(post_params.merge(user_id: @current_user.id, organization_id: @current_user.organization_id))
+    post = Post.new(
+      post_params.merge(
+        user_id: @current_user.id,
+        organization_id: @current_user.organization_id))
+    authorize post
+    post.save!
     render_notice(t("successfully_created", name: post.title))
   end
 
@@ -59,14 +64,9 @@ class PostsController < ApplicationController
     end
 
     def filter_by_status(scope)
-      return scope unless params[:status].present?
+      return scope unless params[:status].present? && Post.statuses.key?(params[:status])
 
-      status = params[:status]
-      if Post.statuses.keys.include?(status)
-        scope.where(status: status)
-      else
-        scope
-      end
+      scope.where(status: params[:status])
     end
 
     def authorize_post

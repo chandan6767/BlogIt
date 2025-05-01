@@ -81,4 +81,6 @@ group :test do
   gem "minitest-bisect"
 
   gem "simplecov", require: false
+
+  gem "mocha"
 end
