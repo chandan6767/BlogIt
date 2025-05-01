@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class CategoriesController < ApplicationController
-  before_action :set_category, only: [:show, :update, :destroy]
+  before_action :set_category, only: [:show]
 
   def index
     categories = Category.all
@@ -15,18 +15,6 @@ class CategoriesController < ApplicationController
 
   def show
     @category = Category.includes(posts: :user).find(params[:id])
-  end
-
-  def update
-    if @category.update(category_params)
-      render_notice(t("successfully_updated", name: @category.name))
-    end
-  end
-
-  def destroy
-    category_name = @category.name
-    @category.destroy
-    render_notice(t("successfully_deleted", name: category_name))
   end
 
   private
