@@ -12,6 +12,7 @@ import {
 } from "components/Posts";
 import { either, isEmpty, isNil } from "ramda";
 import { QueryClientProvider } from "react-query";
+import { ReactQueryDevtools } from "react-query/devtools";
 import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import queryClient from "utils/queryClient";
@@ -48,6 +49,7 @@ const App = () => {
           />
         </Switch>
       </Router>
+      <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
     </QueryClientProvider>
   );
 };

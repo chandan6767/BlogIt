@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import { Delete, ExternalLink, MenuHorizontal } from "@bigbinary/neeto-icons";
 import { Alert, Button, Dropdown, Typography } from "@bigbinary/neetoui";
-import { Container, Header } from "components/commons";
+import { Container, Header, PageLoader } from "components/commons";
 import { useFetchCategories } from "hooks/reactQuery/useCategoriesApi";
 import {
   useDeletePost,
@@ -62,30 +62,16 @@ const Edit = ({ history }) => {
   });
 
   useEffect(() => {
-    // TODO Bring formik into action
-    const hasValidPreview = Boolean(
-      previewData &&
-        typeof previewData === "object" &&
-        previewData.title?.trim() &&
-        previewData.description?.trim() &&
-        Array.isArray(previewData.categories) &&
-        previewData.categories.length > 0
-    );
-    const post = postData?.data?.post;
+    const post = previewData || postData?.data?.post;
 
-    if (hasValidPreview) {
-      setTitle(previewData.title);
-      setDescription(previewData.description);
-      setSelectedCategories(previewData.categories);
-      setStatus(previewData.status);
-    } else if (post) {
+    if (post) {
       setTitle(post.title);
       setDescription(post.description);
       setSelectedCategories(post.categories);
       setStatus(post.status);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isPostLoading]);
 
   useEffect(() => {
     const isDirty = title || description || selectedCategories.length > 0;
@@ -101,9 +87,15 @@ const Edit = ({ history }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [title, description, selectedCategories, status]);
 
-  const handleCancel = () => {
-    history.replace(routes.posts.show.replace(":slug", slug));
-  };
+  if (isPostLoading) {
+    return (
+      <Container>
+        <PageLoader className="flex-1" />
+      </Container>
+    );
+  }
+
+  const handleCancel = () => history.goBack();
 
   const handleSubmit = () => {
     mutate({
@@ -131,7 +123,7 @@ const Edit = ({ history }) => {
     "HH:mmA, D MMMM YYYY"
   );
 
-  const isPublished = postData?.data?.post?.status === "published";
+  const isPublished = postData?.data?.post?.status === POST_STATUS.PUBLISHED;
   const isDisableSubmitAction =
     isPostLoading || isUpdating || !title.trim() || !description.trim();
 
