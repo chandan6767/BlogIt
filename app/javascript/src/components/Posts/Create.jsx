@@ -75,7 +75,8 @@ const Create = ({ history }) => {
       description,
       categories: selectedCategories,
     });
-  }, [title, description, selectedCategories, setPreviewData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [title, description, selectedCategories]);
 
   return (
     <Container>
