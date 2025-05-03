@@ -17,6 +17,7 @@ class Post < ApplicationRecord
   belongs_to :user
   belongs_to :organization
   has_and_belongs_to_many :categories
+  has_many :votes, dependent: :destroy
 
   validates :title,
     presence: true,
@@ -31,6 +32,14 @@ class Post < ApplicationRecord
   validate :slug_not_changed
 
   before_create :set_slug
+
+  def net_votes
+    votes.sum(&:value)
+  end
+
+  def update_bloggable_status!
+    update(is_bloggable: net_votes >= BLOGGABLE_THRESHOLD)
+  end
 
   private
 
