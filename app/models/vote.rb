@@ -24,5 +24,6 @@ class Vote < ApplicationRecord
 
     def update_post_bloggable_status
       post.update_bloggable_status!
+      post.instance_variable_set(:@_net_votes, nil)
     end
 end

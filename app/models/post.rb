@@ -34,7 +34,7 @@ class Post < ApplicationRecord
   before_create :set_slug
 
   def net_votes
-    votes.sum(&:value)
+    @_net_votes ||= votes.sum(&:value)
   end
 
   def update_bloggable_status!
