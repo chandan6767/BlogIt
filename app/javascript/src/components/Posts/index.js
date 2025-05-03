@@ -1,6 +1,6 @@
 import CreatePost from "./Create";
 import EditPost from "./Edit";
-import MyPosts from "./MyPosts";
+import MyPosts from "./My";
 import PreviewPost from "./Preview";
 import ShowPost from "./Show";
 
