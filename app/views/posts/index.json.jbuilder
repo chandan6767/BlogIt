@@ -1,7 +1,12 @@
 # frozen_string_literal: true
 
 json.posts @posts do |post|
-  json.extract! post, :title, :slug, :created_at, :updated_at, :status
+  json.extract! post, :title, :slug, :created_at, :updated_at, :status, :is_bloggable
+
+  json.vote do
+    json.net post.votes.sum(&:value)
+    json.user @user_votes_by_post_id[post.id]
+  end
 
   json.user do
     json.extract! post.user, :name

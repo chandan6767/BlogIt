@@ -8,7 +8,7 @@ class PostsController < ApplicationController
   after_action :verify_authorized, except: :index
 
   def index
-    @posts = Post.includes(:categories, :user, :organization)
+    @posts = Post.includes(:categories, :user, :organization, :votes)
       .where(organization_id: @current_user.organization_id)
       .yield_self { |scope| filter_by_user(scope) }
       .by_category_ids(params[:category_ids])
@@ -16,6 +16,10 @@ class PostsController < ApplicationController
       .order(created_at: :desc)
       .page(params[:page])
       .per(params[:per_page] || DEFAULT_PAGE_SIZE)
+    @user_votes_by_post_id = Vote
+      .where(post_id: @posts.map(&:id), user_id: @current_user.id)
+      .pluck(:post_id, :value)
+      .to_h
   end
 
   def create
