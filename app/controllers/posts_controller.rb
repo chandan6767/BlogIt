@@ -13,6 +13,7 @@ class PostsController < ApplicationController
       .yield_self { |scope| filter_by_user(scope) }
       .by_category_ids(params[:category_ids])
       .yield_self { |scope| filter_by_status(scope) }
+      .yield_self { |scope| filter_by_title(scope) }
       .order(created_at: :desc)
       .page(params[:page])
       .per(params[:per_page] || DEFAULT_PAGE_SIZE)
@@ -75,5 +76,18 @@ class PostsController < ApplicationController
 
     def authorize_post
       authorize @post
+    end
+
+    def filter_by_title(scope)
+      return scope unless params[:title].present?
+
+      title = params[:title].downcase
+      adapter = ActiveRecord::Base.connection.adapter_name.downcase
+
+      if adapter.include?("sqlite")
+        scope.where("LOWER(title) LIKE ?", "%#{title}%")
+      else
+        scope.where("title ILIKE ?", "%#{title}%")
+      end
     end
 end

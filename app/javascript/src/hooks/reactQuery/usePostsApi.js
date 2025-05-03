@@ -10,11 +10,25 @@ export const useFetchPosts = ({
   perPage = DEFAULT_PAGE_SIZE,
   onlyMyPosts = false,
   status,
+  title,
 } = {}) => {
-  const categoryIds = selectedCategories.map(category => category.id);
+  const categoryIds =
+    Array.isArray(selectedCategories) &&
+    selectedCategories.length > 0 &&
+    typeof selectedCategories[0] === "object"
+      ? selectedCategories.map(category => category.id)
+      : selectedCategories;
 
   return useQuery({
-    queryKey: [QUERY_KEYS.POSTS, categoryIds, page, perPage],
+    queryKey: [
+      QUERY_KEYS.POSTS,
+      categoryIds,
+      page,
+      perPage,
+      onlyMyPosts,
+      status,
+      title,
+    ],
     queryFn: () =>
       postsApi.fetch({
         categoryIds,
@@ -22,6 +36,7 @@ export const useFetchPosts = ({
         perPage,
         onlyMyPosts,
         status,
+        title,
       }),
   });
 };

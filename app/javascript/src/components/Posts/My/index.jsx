@@ -1,12 +1,19 @@
-import { DEFAULT_PAGE_NUMBER } from "constants/pagination";
+import { DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE } from "constants/pagination";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Checkbox, CheckboxInactive, Filter } from "@bigbinary/neeto-icons";
-import { ActionDropdown, Button, Table, Typography } from "@bigbinary/neetoui";
+import {
+  ActionDropdown,
+  Button,
+  Table,
+  Tag,
+  Typography,
+} from "@bigbinary/neetoui";
 import classNames from "classnames";
 import { Container, Header, PageLoader } from "components/commons";
 import dayjs from "dayjs";
+import { useFetchCategories } from "hooks/reactQuery/useCategoriesApi";
 import { useFetchPosts } from "hooks/reactQuery/usePostsApi";
 import useQueryParams from "hooks/useQueryParams";
 import { mergeLeft, propOr } from "ramda";
@@ -18,7 +25,10 @@ import {
   columnData as allColumnData,
   columnKeysForDropdown,
 } from "./constants";
+import FiltersPane from "./FiltersPane";
 import Title from "./Title";
+
+import List from "../Category/List";
 
 import routes from "~/routes";
 
@@ -31,21 +41,39 @@ const My = () => {
     status: true,
     actions: true,
   });
+  const [isFiltersPaneOpen, setIsFiltersPaneOpen] = useState(false);
 
   const history = useHistory();
   const queryParams = useQueryParams();
 
   const currentPage = Number(propOr(DEFAULT_PAGE_NUMBER, "page", queryParams));
-  const perPage = Number(propOr(8, "perPage", queryParams));
+  const perPage = Number(propOr(DEFAULT_PAGE_SIZE * 2, "perPage", queryParams));
+  const status = propOr(null, "status", queryParams);
+  const title = propOr(null, "title", queryParams);
+  const categoryIds = propOr(null, "categoryIds", queryParams);
+  const selectedCategoryIds = categoryIds ? categoryIds.split(",") : [];
 
   const { data, isLoading } = useFetchPosts({
     page: currentPage,
     perPage,
     onlyMyPosts: true,
+    selectedCategories: selectedCategoryIds,
+    status,
+    title,
   });
+
+  const { data: categoriesData } = useFetchCategories();
+  const categories = categoriesData?.data?.categories || [];
+  const filteredCategories = categories.filter(category =>
+    selectedCategoryIds.includes(category.id.toString())
+  );
 
   const posts = data?.data?.posts || [];
   const meta = data?.data?.meta || {};
+
+  const toggleFiltersPane = useCallback(() => {
+    setIsFiltersPaneOpen(prev => !prev);
+  }, []);
 
   const handlePageNavigation = page => {
     history.replace(
@@ -89,6 +117,8 @@ const My = () => {
     setVisibleColumns(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
+  const isFiltersApplied = title || status || selectedCategoryIds.length > 0;
+
   return (
     <Container>
       <div className="mx-auto flex w-full flex-1 flex-col space-y-6 px-[5vw] py-[3vw]">
@@ -98,7 +128,17 @@ const My = () => {
         ) : (
           <>
             <div className="flex items-center justify-between">
-              <Typography style="h4">{meta.total_count} articles</Typography>
+              <div className="flex items-center gap-2">
+                <Typography style="h4">
+                  {meta.total_count}{" "}
+                  {isFiltersApplied ? "results for" : "articles"}
+                </Typography>
+                {title && <Typography style="h4">"{title}"</Typography>}
+                {status && <Tag className="capitalize">{status}</Tag>}
+                {selectedCategoryIds.length > 0 && (
+                  <List categories={filteredCategories} />
+                )}
+              </div>
               <div className="flex items-center gap-2">
                 <ActionDropdown buttonStyle="secondary" label="Columns">
                   <ActionDropdown.Menu>
@@ -124,7 +164,11 @@ const My = () => {
                     ))}
                   </ActionDropdown.Menu>
                 </ActionDropdown>
-                <Button icon={Filter} style="secondary" />
+                <Button
+                  icon={Filter}
+                  style="secondary"
+                  onClick={toggleFiltersPane}
+                />
               </div>
             </div>
             <Table
@@ -142,6 +186,7 @@ const My = () => {
           </>
         )}
       </div>
+      <FiltersPane closePane={toggleFiltersPane} isOpen={isFiltersPaneOpen} />
     </Container>
   );
 };
