@@ -10,11 +10,25 @@ export const useFetchPosts = ({
   perPage = DEFAULT_PAGE_SIZE,
   onlyMyPosts = false,
   status,
+  title,
 } = {}) => {
-  const categoryIds = selectedCategories.map(category => category.id);
+  const categoryIds =
+    Array.isArray(selectedCategories) &&
+    selectedCategories.length > 0 &&
+    typeof selectedCategories[0] === "object"
+      ? selectedCategories.map(category => category.id)
+      : selectedCategories;
 
   return useQuery({
-    queryKey: [QUERY_KEYS.POSTS, categoryIds, page, perPage],
+    queryKey: [
+      QUERY_KEYS.POSTS,
+      categoryIds,
+      page,
+      perPage,
+      onlyMyPosts,
+      status,
+      title,
+    ],
     queryFn: () =>
       postsApi.fetch({
         categoryIds,
@@ -22,6 +36,7 @@ export const useFetchPosts = ({
         perPage,
         onlyMyPosts,
         status,
+        title,
       }),
   });
 };
@@ -71,6 +86,36 @@ export const useDeletePost = ({ onSuccess, onError } = {}) => {
 
   return useMutation({
     mutationFn: slug => postsApi.destroy(slug),
+    onSuccess: (...args) => {
+      queryClient.invalidateQueries([QUERY_KEYS.POSTS]);
+      onSuccess?.(...args);
+    },
+    onError: (...args) => {
+      onError?.(...args);
+    },
+  });
+};
+
+export const useBulkUpdatePosts = ({ onSuccess, onError } = {}) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ slugs, status }) => postsApi.bulkUpdate({ slugs, status }),
+    onSuccess: (...args) => {
+      queryClient.invalidateQueries([QUERY_KEYS.POSTS]);
+      onSuccess?.(...args);
+    },
+    onError: (...args) => {
+      onError?.(...args);
+    },
+  });
+};
+
+export const useBulkDeletePosts = ({ onSuccess, onError } = {}) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ slugs }) => postsApi.bulkDestroy({ slugs }),
     onSuccess: (...args) => {
       queryClient.invalidateQueries([QUERY_KEYS.POSTS]);
       onSuccess?.(...args);
