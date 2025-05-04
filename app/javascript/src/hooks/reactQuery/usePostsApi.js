@@ -95,3 +95,33 @@ export const useDeletePost = ({ onSuccess, onError } = {}) => {
     },
   });
 };
+
+export const useBulkUpdatePosts = ({ onSuccess, onError } = {}) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ slugs, status }) => postsApi.bulkUpdate({ slugs, status }),
+    onSuccess: (...args) => {
+      queryClient.invalidateQueries([QUERY_KEYS.POSTS]);
+      onSuccess?.(...args);
+    },
+    onError: (...args) => {
+      onError?.(...args);
+    },
+  });
+};
+
+export const useBulkDeletePosts = ({ onSuccess, onError } = {}) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ slugs }) => postsApi.bulkDestroy({ slugs }),
+    onSuccess: (...args) => {
+      queryClient.invalidateQueries([QUERY_KEYS.POSTS]);
+      onSuccess?.(...args);
+    },
+    onError: (...args) => {
+      onError?.(...args);
+    },
+  });
+};
