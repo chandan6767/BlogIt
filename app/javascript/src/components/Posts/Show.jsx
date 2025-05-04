@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Edit } from "@bigbinary/neeto-icons";
+import { Download, Edit } from "@bigbinary/neeto-icons";
 import { Avatar, Button, Tag, Typography } from "@bigbinary/neetoui";
 import { Container, PageLoader } from "components/commons";
 import { useShowPost } from "hooks/reactQuery/usePostsApi";
@@ -47,6 +47,9 @@ const Show = ({ history }) => {
               {isDraft && (
                 <Tag label="Draft" size="large" style="danger" type="solid" />
               )}
+              <Link to="pdf">
+                <Button icon={Download} style="text" />
+              </Link>
               {post?.user?.id === currentUserId && (
                 <Link to="edit">
                   <Button

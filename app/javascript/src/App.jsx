@@ -5,6 +5,7 @@ import { PrivateRoute } from "components/commons";
 import Home from "components/Home";
 import {
   CreatePost,
+  DownloadPdf,
   EditPost,
   MyPosts,
   PreviewPost,
@@ -29,6 +30,7 @@ const App = () => {
       <Router>
         <ToastContainer />
         <Switch>
+          <Route exact component={DownloadPdf} path={routes.posts.pdf} />
           <Route exact component={MyPosts} path={routes.my.posts} />
           <Route exact component={PreviewPost} path={routes.posts.preview} />
           <Route exact component={EditPost} path={routes.posts.edit} />

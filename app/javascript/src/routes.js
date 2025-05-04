@@ -5,6 +5,7 @@ const routes = {
     show: "/posts/:slug/show",
     edit: "/posts/:slug/edit",
     preview: "/posts/preview",
+    pdf: "/posts/:slug/pdf",
   },
   auth: {
     signup: "/signup",

@@ -8,6 +8,9 @@ Rails.application.routes.draw do
         patch :bulk_update
         delete :bulk_destroy
       end
+      resource :pdf, only: %i[create], module: :posts, controller: :pdfs do
+        get :download
+      end
     end
     resources :categories, only: %i[index create show]
     resources :organizations, only: %i[index]
