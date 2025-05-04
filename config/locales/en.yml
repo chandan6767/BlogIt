@@ -42,3 +42,8 @@ en:
   authorization:
     denied: "Access denied. You are not authorized to perform this action."
   not_found: "Couldn't find %{entity}"
+  pdf:
+    render: "Rendering the pdf"
+    generate: "Generating the post PDF"
+    upload: "Uploading to server"
+    attach: "Attaching the PDF to the post"

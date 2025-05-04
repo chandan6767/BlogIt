@@ -25,6 +25,14 @@ const bulkUpdate = ({ slugs, status }) =>
 const bulkDestroy = payload =>
   axios.delete(`${API_ENDPOINTS.POSTS}/bulk_destroy`, { data: payload });
 
+const generatePdf = slug =>
+  axios.post(`${API_ENDPOINTS.POSTS}/${slug}/pdf`, {});
+
+const download = slug =>
+  axios.get(`${API_ENDPOINTS.POSTS}/${slug}/pdf/download`, {
+    responseType: "blob",
+  });
+
 const postsApi = {
   fetch,
   create,
@@ -33,6 +41,8 @@ const postsApi = {
   destroy,
   bulkUpdate,
   bulkDestroy,
+  generatePdf,
+  download,
 };
 
 export default postsApi;

@@ -2,14 +2,27 @@
 
 require "test_helper"
 
-module ApplicationCable
-  class ConnectionTest < ActionCable::Connection::TestCase
-    # test "connects with cookies" do
-    #   cookies.signed[:user_id] = 42
-    #
-    #   connect
-    #
-    #   assert_equal connection.user_id, "42"
-    # end
+class ApplicationCable::ConnectionTest < ActionCable::Connection::TestCase
+  include FactoryBot::Syntax::Methods
+
+  def setup
+    @user = create(:user)
+  end
+
+  def test_connection_success_when_auth_token_and_email_is_set_correctly
+    connect params: { auth_token: @user.authentication_token, email: @user.email }
+    assert_equal connection.current_user, @user
+  end
+
+  def test_connection_fails_when_credentials_are_empty
+    assert_reject_connection { connect }
+  end
+
+  def test_connection_fails_when_user_is_not_verified
+    assert_reject_connection {
+      connect params: {
+        auth_token: @user.authentication_token, email: "test@example.com"
+      }
+    }
   end
 end

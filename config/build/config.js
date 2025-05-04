@@ -19,6 +19,7 @@ const alias = {
   utils: absolutePath("src/utils"),
   hooks: absolutePath("src/hooks"),
   stores: absolutePath("src/stores"),
+  channels: absolutePath("src/channels"),
   assets: absolutePath("../assets"),
 };
 

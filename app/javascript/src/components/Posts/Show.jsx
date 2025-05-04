@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 
-import { Edit } from "@bigbinary/neeto-icons";
+import { Download, Edit } from "@bigbinary/neeto-icons";
 import { Avatar, Button, Tag, Typography } from "@bigbinary/neetoui";
 import { Container, PageLoader } from "components/commons";
 import { useShowPost } from "hooks/reactQuery/usePostsApi";
@@ -9,11 +9,14 @@ import { getFromLocalStorage } from "utils/storage";
 
 import List from "./Category/List";
 import { POST_STATUS } from "./constants";
+import DownloadPdf from "./Download";
 import { formatDate } from "./utils";
 
 import routes from "~/routes";
 
 const Show = ({ history }) => {
+  const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
+
   const currentUserId = Number(getFromLocalStorage("authUserId"));
 
   const { slug } = useParams();
@@ -47,6 +50,12 @@ const Show = ({ history }) => {
               {isDraft && (
                 <Tag label="Draft" size="large" style="danger" type="solid" />
               )}
+              <Button
+                icon={Download}
+                style="text"
+                tooltipProps={{ content: "Download PDF", position: "top" }}
+                onClick={() => setIsDownloadModalOpen(true)}
+              />
               {post?.user?.id === currentUserId && (
                 <Link to="edit">
                   <Button
@@ -84,6 +93,12 @@ const Show = ({ history }) => {
           {post?.description}
         </Typography>
       </div>
+      {isDownloadModalOpen && (
+        <DownloadPdf
+          description={`Generating PDF for ${post?.title}`}
+          setIsModalOpen={setIsDownloadModalOpen}
+        />
+      )}
     </Container>
   );
 };
