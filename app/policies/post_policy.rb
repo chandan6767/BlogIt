@@ -23,4 +23,8 @@ class PostPolicy
   def destroy?
     update?
   end
+
+  def download?
+    show?
+  end
 end

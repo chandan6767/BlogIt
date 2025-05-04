@@ -32,5 +32,7 @@ module BlogIt
     end
 
     config.active_job.queue_adapter = :sidekiq
+
+    Dotenv::Rails.load
   end
 end

@@ -1,13 +1,21 @@
 import React, { useEffect, useState } from "react";
 
+import { Modal, Typography } from "@bigbinary/neetoui";
 import postsApi from "apis/posts";
-import { Container, PageTitle } from "components/commons";
+import createConsumer from "channels/consumer";
+import { subscribeToPdfDownloadChannel } from "channels/pdfDownloadChannel";
+import { ProgressBar } from "components/commons";
+import FileSaver from "file-saver";
 import Logger from "js-logger";
 import { useParams } from "react-router-dom";
 
-const Download = () => {
-  const [isLoading, setIsLoading] = useState(true);
+const DownloadPdf = ({ setIsModalOpen, description }) => {
+  const [progress, setProgress] = useState(0);
+  const [message, setMessage] = useState("");
+
   const { slug } = useParams();
+
+  const consumer = createConsumer();
 
   const generatePdf = async () => {
     try {
@@ -17,46 +25,65 @@ const Download = () => {
     }
   };
 
-  const saveAs = ({ blob, fileName }) => {
-    const objectUrl = window.URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = objectUrl;
-    link.setAttribute("download", fileName);
-    document.body.appendChild(link);
-    link.click();
-    link.parentNode.removeChild(link);
-    setTimeout(() => window.URL.revokeObjectURL(objectUrl), 150);
-  };
-
   const downloadPdf = async () => {
     try {
-      const { data } = await postsApi.download(slug);
-      saveAs({ blob: data, fileName: "blog_it_post.pdf" });
+      const { data, headers } = await postsApi.download(slug);
+      const disposition = headers["content-disposition"];
+      let filename = "granite_task_report.pdf";
+
+      if (disposition && disposition.includes("filename=")) {
+        const matches = disposition.match(/filename="?([^"]+)"?/);
+        if (matches?.[1]) filename = matches[1];
+      }
+
+      FileSaver.saveAs(data, filename);
+      setIsModalOpen(false);
     } catch (error) {
       Logger.error(error);
     } finally {
-      setIsLoading(false);
+      setIsModalOpen(false);
     }
   };
 
+  const handleClose = () => {
+    setIsModalOpen(false);
+    consumer.disconnect();
+  };
+
   useEffect(() => {
-    generatePdf();
-    setTimeout(() => {
-      downloadPdf();
-    }, 5000);
+    subscribeToPdfDownloadChannel({
+      consumer,
+      setMessage,
+      setProgress,
+      generatePdf,
+    });
+
+    return () => {
+      consumer.disconnect();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const message = isLoading ? "PDF is being generated..." : "PDF downloaded!";
+  useEffect(() => {
+    if (progress === 100) {
+      setMessage("Saving PDF");
+      downloadPdf();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [progress]);
 
   return (
-    <Container>
-      <div className="flex flex-col gap-y-8">
-        <PageTitle title="Download PDF" />
-        <h1>{message}</h1>
-      </div>
-    </Container>
+    <Modal isOpen onClose={handleClose}>
+      <Modal.Header description={description}>
+        <Typography id="dialog1Title" style="h2">
+          {message}
+        </Typography>
+      </Modal.Header>
+      <Modal.Body>
+        <ProgressBar progress={progress} />
+      </Modal.Body>
+    </Modal>
   );
 };
 
-export default Download;
+export default DownloadPdf;
